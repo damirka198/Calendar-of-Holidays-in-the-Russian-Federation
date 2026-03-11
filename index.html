@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Этно-Календарь</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="effects-container"></div>
+    
+    <div class="wrapper">
+        <div class="top-controls">
+            <select id="regionSelect" class="glass-select">
+                <option value="all">🌍 Вся Россия (Все праздники)</option>
+                <option value="udmurtia">🌺 Удмуртия</option>
+                <option value="altai">⛰️ Горный Алтай</option>
+                <option value="arkhangelsk">🌊 Архангельская область</option>
+                <option value="astrakhan">🍉 Астрахань</option>
+                <option value="buryatia">🏹 Бурятия</option>
+                <option value="novgorod">🏰 Великий Новгород</option>
+                <option value="dagestan">🏔️ Дагестан</option>
+                <option value="kaliningrad">⚓ Калининград</option>
+                <option value="kalmykia">🌷 Калмыкия</option>
+                <option value="kamchatka">🌋 Камчатка</option>
+                <option value="crimea">🍇 Крым</option>
+                <option value="mari_el">🌲 Марий Эл</option>
+                <option value="spb">🐟 Санкт-Петербург</option>
+                <option value="suzdal">🥒 Суздаль</option>
+                <option value="khakassia">🔥 Хакасия</option>
+                <option value="chelyabinsk">⚒️ Челябинская область</option>
+                <option value="yanao">❄️ ЯНАО, ХМАО, Таймыр</option>
+                <option value="yakutia">☀️ Якутия</option>
+            </select>
+            <button id="openStatsBtn" class="stats-btn">📊 Мой год</button>
+        </div>
+
+        <main class="calendar-card">
+            <header class="card-header">
+                <button id="prevMonth" class="nav-circle">❮</button>
+                <h1 id="monthDisplay">Март 2026</h1>
+                <button id="nextMonth" class="nav-circle">❯</button>
+            </header>
+
+            <div class="weekdays">
+                <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+            </div>
+
+            <div id="calendarGrid" class="days-grid"></div>
+
+            <div class="info-dock" id="infoDock">
+                <div class="info-header">
+                    <span class="dot"></span>
+                    <h3 id="selectedDateName">Выберите дату</h3>
+                </div>
+                <p id="selectedHolidayDesc">Нажмите на день, чтобы отметить настроение или узнать историю.</p>
+                <div class="actions">
+                    <button id="openDetails" class="btn-glass" style="display:none; background: var(--history-color);">📖 Подробнее</button>
+                    <button id="editNote" class="btn-outline">Мой день</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalOverlay" class="overlay">
+        <div class="modal">
+            <button class="close-x" id="closeModalBtn">✕</button>
+            <h2 id="modalTitle">Название</h2>
+            
+            <div class="modal-content">
+                <p id="modalMainText" class="main-desc-text"></p>
+                
+                <div id="modalTabs" class="modal-tabs" style="display: none;">
+                    <button class="tab-btn active" id="btnTabHow" onclick="switchTab('how')">✨ Традиции</button>
+                    <button class="tab-btn" id="btnTabHistory" onclick="switchTab('history')">📖 История</button>
+                    <button class="tab-btn" id="btnTabChecklist" onclick="switchTab('checklist')">✅ Чек-лист</button>
+                </div>
+
+                <div id="infoContents" style="display: none;">
+                    <div id="tabHow" class="tab-content active">
+                        <div class="history-section how-section">
+                            <p id="howText"></p>
+                        </div>
+                    </div>
+                    <div id="tabHistory" class="tab-content">
+                        <div class="history-section">
+                            <p id="historyText"></p>
+                        </div>
+                    </div>
+                    <div id="tabChecklist" class="tab-content">
+                        <div class="checklist-section">
+                            <div id="checklistContainer"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noteContents" style="display: none;">
+                    <div class="mood-section">
+                        <label class="section-label">ВАШЕ НАСТРОЕНИЕ:</label>
+                        <div class="mood-picker">
+                            <div class="mood-dot mood-happy" data-mood="happy" title="Счастье">😄</div>
+                            <div class="mood-dot mood-calm" data-mood="calm" title="Спокойствие">😌</div>
+                            <div class="mood-dot mood-prod" data-mood="prod" title="Продуктивность">🚀</div>
+                            <div class="mood-dot mood-sad" data-mood="sad" title="Грусть">😢</div>
+                            <div class="mood-dot mood-party" data-mood="party" title="Вечеринка">🥳</div>
+                        </div>
+                    </div>
+                    <div class="user-note-area">
+                        <label class="section-label">ЗАМЕТКА:</label>
+                        <textarea id="userNoteInput" placeholder="Что важного произошло?"></textarea>
+                        <button id="saveNoteBtn" class="btn-primary">Сохранить</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="statsOverlay" class="overlay">
+        <div class="modal">
+            <button class="close-x" id="closeStatsBtn">✕</button>
+            <h2 style="margin-bottom: 20px;">Итоги года 📈</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><h3>До Нового года</h3><p id="daysToNY" class="stat-big">--</p></div>
+                <div class="stat-card"><h3>Заметок</h3><p id="totalNotes" class="stat-big">0</p></div>
+            </div>
+            <label class="section-label">СТАТИСТИКА НАСТРОЕНИЯ:</label>
+            <div id="moodStatsContainer" class="mood-stats-box"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

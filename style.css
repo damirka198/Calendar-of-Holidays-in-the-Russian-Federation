@@ -1,0 +1,222 @@
+/* =========================================
+   БАЗОВЫЕ НАСТРОЙКИ И ПЕРЕМЕННЫЕ
+========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;800&display=swap');
+
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --history-color: #8b5cf6;
+    --bg-day: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    --bg-night: linear-gradient(135deg, #0f172a 0%, #312e81 100%);
+    --glass: rgba(255, 255, 255, 0.85);
+    --glass-night: rgba(30, 41, 59, 0.85);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+
+body { background: var(--bg-day); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 30px 20px; transition: background 1s ease; overflow-x: hidden; }
+
+/* =========================================
+   ИДЕАЛЬНЫЙ НОЧНОЙ РЕЖИМ
+========================================= */
+body.night-mode { background: var(--bg-night); }
+body.night-mode .calendar-card { background: var(--glass-night); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 100px rgba(0,0,0,0.5); }
+body.night-mode h1, body.night-mode h2, body.night-mode h3 { color: #f1f5f9; }
+
+body.night-mode .day { background: rgba(255,255,255,0.05); color: #f1f5f9; }
+body.night-mode .day:hover { background: #334155; }
+body.night-mode .day.selected { border-color: var(--primary); }
+body.night-mode .day.weekend { color: #f87171; }
+body.night-mode .day.holiday { color: #34d399 !important; background: rgba(16, 185, 129, 0.15); border-color: rgba(52, 211, 153, 0.4); text-shadow: 0 0 8px rgba(52, 211, 153, 0.4); }
+
+body.night-mode .modal { background: #1e293b; color: #f1f5f9; }
+body.night-mode .close-x { background: #334155; color: #fff; }
+body.night-mode .main-desc-text { color: #cbd5e1; }
+body.night-mode #selectedDateName { color: #fff; }
+
+body.night-mode .history-section { background: rgba(139, 92, 246, 0.15); border-left-color: #a78bfa; }
+body.night-mode .how-section { background: rgba(245, 158, 11, 0.15); border-left-color: #fbbf24; }
+body.night-mode #historyText, body.night-mode #howText { color: #e2e8f0; }
+
+body.night-mode .checklist-section, body.night-mode .mood-picker, body.night-mode .stat-card, body.night-mode .modal-tabs, body.night-mode .mood-stats-box { background: #0f172a; border-color: #334155; }
+body.night-mode .task-item span { color: #e2e8f0; }
+body.night-mode .tab-btn { color: #94a3b8; }
+body.night-mode .tab-btn:hover { color: #f1f5f9; }
+body.night-mode .tab-btn.active { background: #334155; color: #fff; }
+body.night-mode textarea { background: #0f172a; color: #fff; border-color: #334155; }
+
+/* =========================================
+   ОСНОВНОЙ КАРКАС И ВЕРХНЯЯ ПАНЕЛЬ
+========================================= */
+.wrapper { width: 100%; max-width: 1100px; z-index: 2; position: relative; margin: auto; }
+
+.top-controls { display: flex; justify-content: space-between; margin-bottom: 25px; gap: 20px; flex-wrap: wrap; }
+.glass-select { padding: 16px 25px; border-radius: 20px; border: none; outline: none; background: var(--glass); font-weight: 600; color: var(--text-main); box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; flex-grow: 1; font-size: 16px; }
+.stats-btn { padding: 16px 30px; border-radius: 20px; border: none; background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); transition: 0.3s; font-size: 16px; }
+.stats-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(16, 185, 129, 0.4); }
+
+.calendar-card { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 40px; padding: 40px 60px; box-shadow: 0 40px 100px rgba(0,0,0,0.1); transition: background 0.5s; }
+
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.card-header h1 { font-size: 38px; font-weight: 800; color: var(--text-main); }
+.nav-circle { width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; color: var(--primary); font-size: 20px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+.nav-circle:hover { transform: scale(1.1); background: var(--primary); color: #fff; }
+
+/* =========================================
+   СЕТКА ДНЕЙ
+========================================= */
+.weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 15px; font-weight: 600; color: #94a3b8; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; }
+.weekdays span:nth-child(6), .weekdays span:nth-child(7) { color: #ef4444; font-weight: 800; }
+
+/* ВОТ ЗДЕСЬ ИЗМЕНЕНИЯ - ФИКСИРУЕМ ВЫСОТУ ДЛЯ ПК НАВСЕГДА */
+.days-grid { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    grid-template-rows: repeat(6, 1fr); 
+    gap: 15px; 
+}
+.days-grid::after {
+    content: "";
+    grid-column: 1;
+    grid-row: 6;
+    aspect-ratio: 1.5;
+    pointer-events: none;
+}
+
+.day { aspect-ratio: 1.5; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.6); border-radius: 16px; cursor: pointer; font-size: 22px; font-weight: 600; color: var(--text-main); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid transparent; }
+.day:hover { transform: scale(1.05); background: #fff; z-index: 2; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+.day.selected { border-color: var(--primary); transform: scale(1.02); }
+
+.day.weekend { color: #ef4444; }
+.day.holiday { color: #10b981 !important; font-weight: 800; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+
+.day.m-happy { background: #fef08a !important; box-shadow: inset 0 0 15px rgba(253, 224, 71, 0.6); border-color: transparent;}
+.day.m-calm  { background: #bae6fd !important; border-color: transparent;}
+.day.m-prod  { background: #e9d5ff !important; border-color: transparent;}
+.day.m-sad   { background: #cbd5e1 !important; border-color: transparent;}
+.day.m-party { background: #fbcfe8 !important; border-color: transparent;}
+
+/* =========================================
+   НИЖНЯЯ ИНФО-ПАНЕЛЬ
+========================================= */
+.info-dock { margin-top: 35px; padding-top: 30px; border-top: 2px dashed rgba(0,0,0,0.05); }
+.info-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+.dot { width: 14px; height: 14px; background: var(--primary); border-radius: 50%; }
+#selectedDateName { font-size: 28px; font-weight: 800; color: var(--text-main); }
+
+/* Добавлена минимальная высота текста, чтобы нижние кнопки не прыгали */
+#selectedHolidayDesc { font-size: 18px; color: var(--text-muted); line-height: 1.6; white-space: pre-line; min-height: 58px; }
+
+.actions { display: flex; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+.btn-glass { background: var(--primary); color: #fff; border: none; padding: 16px 28px; border-radius: 18px; cursor: pointer; font-weight: 700; transition: 0.2s; flex-grow: 1; font-size: 16px;}
+.btn-glass:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+.btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); padding: 16px 28px; border-radius: 18px; cursor: pointer; font-weight: 800; transition: 0.2s; flex-grow: 1; font-size: 16px;}
+.btn-outline:hover { background: var(--primary); color: #fff; }
+
+/* =========================================
+   МОДАЛЬНЫЕ ОКНА И ВКЛАДКИ
+========================================= */
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 9999; }
+.overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal { background: #fff; padding: 50px 60px; border-radius: 35px; width: 95%; max-width: 950px; position: relative; animation: slideUp 0.4s cubic-bezier(0.17, 0.89, 0.32, 1.28); color: var(--text-main); box-shadow: 0 40px 80px rgba(0,0,0,0.2); }
+@keyframes slideUp { from { transform: translateY(40px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+.close-x { position: absolute; top: 25px; right: 25px; background: #f1f5f9; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: 800; transition: 0.2s; z-index: 10; color: #64748b; }
+.close-x:hover { background: #e11d48; color: #fff; transform: rotate(90deg); }
+
+.modal-content { max-height: 70vh; overflow-y: auto; padding-right: 15px; }
+.modal-content::-webkit-scrollbar { width: 8px; }
+.modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+.main-desc-text { color: var(--text-muted); line-height: 1.5; margin-bottom: 25px; font-size: 18px; }
+
+.modal-tabs { display: flex; gap: 5px; background: #f1f5f9; padding: 6px; border-radius: 16px; margin-bottom: 25px; flex-wrap: wrap;}
+.tab-btn { flex: 1; background: transparent; border: none; padding: 14px; border-radius: 12px; font-weight: 700; color: #64748b; font-size: 16px; cursor: pointer; transition: 0.3s; min-width: 120px;}
+.tab-btn:hover { color: var(--text-main); }
+.tab-btn.active { background: #fff; color: var(--history-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.tab-content { display: none; animation: fadeIn 0.3s ease; }
+.tab-content.active { display: block; }
+
+.section-label { font-size: 14px; font-weight: 800; color: #94a3b8; letter-spacing: 1px; display: block; margin-bottom: 15px; margin-top: 10px; text-transform: uppercase; }
+
+.history-section { background: #f5f3ff; padding: 35px; border-radius: 20px; border-left: 5px solid var(--history-color); transition: background 0.3s; }
+.how-section { border-left-color: #f59e0b; background: #fffbeb; }
+
+#historyText, #howText { font-size: 18px; line-height: 1.8; color: #334155; }
+
+.checklist-section { background: #f8fafc; padding: 35px; border-radius: 20px; border: 1px solid #e2e8f0; }
+.task-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; cursor: pointer; }
+.task-item:last-child { margin-bottom: 0; }
+.task-item input { width: 26px; height: 26px; cursor: pointer; accent-color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+.task-item span { font-size: 19px; font-weight: 500; transition: 0.2s; line-height: 1.5; }
+.task-item input:checked + span { text-decoration: line-through; color: #94a3b8; }
+
+.mood-picker { display: flex; gap: 20px; justify-content: center; background: #f8fafc; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0; flex-wrap: wrap;}
+.mood-dot { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 28px; border: 3px solid transparent; transition: 0.2s; }
+.mood-dot:hover { transform: scale(1.15); }
+.mood-dot.selected-mood { border-color: #334155; transform: scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+.mood-dot.mood-happy { background: #fef08a; } .mood-dot.mood-calm { background: #bae6fd; } .mood-dot.mood-prod { background: #e9d5ff; } .mood-dot.mood-sad { background: #cbd5e1; } .mood-dot.mood-party { background: #fbcfe8; }
+
+textarea { width: 100%; height: 130px; margin-top: 10px; border: 2px solid #e2e8f0; border-radius: 15px; padding: 20px; font-size: 17px; resize: none; outline: none; transition: 0.2s; font-family: 'Montserrat', sans-serif;}
+textarea:focus { border-color: var(--primary); background: #f8fafc; }
+.btn-primary { width: 100%; margin-top: 25px; background: #1e293b; color: #fff; padding: 20px; border: none; border-radius: 16px; cursor: pointer; font-weight: 700; transition: 0.2s; font-size: 18px; }
+.btn-primary:hover { background: var(--primary); box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); transform: translateY(-2px); }
+
+/* Статистика */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;}
+.stat-card { background: #f8fafc; padding: 30px 20px; border-radius: 20px; text-align: center; border: 1px solid #e2e8f0; }
+.stat-card h3 { font-size: 15px; color: #64748b; margin-bottom: 10px; text-transform: uppercase; font-weight: 800;}
+.stat-big { font-size: 40px; font-weight: 800; color: var(--primary); }
+.mood-stats-box { background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; }
+.mood-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px dashed #cbd5e1; font-weight: 600; font-size: 19px;}
+.mood-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+#effects-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+/* =========================================
+   АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ
+========================================= */
+@media (max-width: 850px) {
+    .wrapper { max-width: 100%; }
+    .calendar-card { padding: 40px; }
+    .card-header h1 { font-size: 32px; }
+    .day { font-size: 20px; border-radius: 14px; aspect-ratio: 1.2;} 
+    
+    /* ЗДЕСЬ ИЗМЕНЕНИЯ - ФИКСИРУЕМ ВЫСОТУ ДЛЯ ПЛАНШЕТОВ */
+    .days-grid { gap: 12px; }
+    .days-grid::after { aspect-ratio: 1.2; }
+    
+    #selectedDateName { font-size: 24px; }
+}
+
+/* =========================================
+   АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ
+========================================= */
+@media (max-width: 600px) {
+    body { padding: 15px; }
+    .calendar-card { padding: 25px; border-radius: 30px; }
+    .card-header h1 { font-size: 26px; }
+    .nav-circle { width: 40px; height: 40px; font-size: 16px; }
+    .weekdays { font-size: 12px; margin-bottom: 15px;}
+    
+    /* ЗДЕСЬ ИЗМЕНЕНИЯ - ФИКСИРУЕМ ВЫСОТУ ДЛЯ ТЕЛЕФОНОВ */
+    .days-grid { gap: 8px; }
+    .days-grid::after { aspect-ratio: 1; }
+    
+    .day { font-size: 16px; border-radius: 12px; aspect-ratio: 1; } 
+    .info-dock { margin-top: 30px; padding-top: 25px; }
+    #selectedDateName { font-size: 22px; }
+    
+    .modal { padding: 30px 20px; width: 95%; max-width: none; }
+    .top-controls { flex-direction: column; gap: 10px;}
+    .glass-select, .stats-btn { width: 100%; font-size: 14px; padding: 14px 20px;}
+    .actions { flex-direction: column; gap: 10px;}
+    .btn-glass, .btn-outline { width: 100%; padding: 14px; font-size: 15px;}
+    .tab-btn { padding: 10px; font-size: 13px; }
+}
